@@ -1,0 +1,7 @@
+- name: Ensure service user exists
+  user:
+    name: "{{ service_user }}"
+    system: true
+    create_home: true
+    home: "/opt/{{ service_user }}"
+    shell: /usr/sbin/nologin

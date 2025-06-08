@@ -1,0 +1,9 @@
+home_dir: /opt/mqtt_monitor
+venv_dir: "{{ home_dir }}/venv"
+script_name: "mqtt_monitor.py"
+service_name: "mqtt_monitor"
+monitoring_user: "mqtt_monitor_agent"
+src_service_file: "{{ service_name }}.service.j2"
+dest_service_file: "/etc/systemd/system/{{ service_name }}.service"
+src_env_file: "{{ service_name }}.env.j2"
+dest_env_file: "/etc/{{ service_name }}.env"

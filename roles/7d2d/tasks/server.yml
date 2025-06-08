@@ -1,0 +1,57 @@
+- name: Create 7D2D server directory
+  file:
+    path: "{{ server_dir }}"
+    state: directory
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+    mode: '0755'
+
+- name: Install 7 Days to Die server using SteamCMD
+  shell: >
+    sudo -u steam
+    {{ steamcmd_dir }}/steamcmd.sh
+    +force_install_dir {{ server_dir }}
+    +login anonymous
+    +app_update 294420 validate
+    +quit
+  args:
+    chdir: "{{ steamcmd_dir }}"
+
+- name: Ensure steamcmd user owns the entire 7D2D server directory
+  file:
+    path: "{{ server_dir }}"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+    recurse: yes
+
+- name: Copy default serverconfig.xml if not present
+  copy:
+    src: "serverconfig.xml"
+    dest: "{{ server_config }}"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+    mode: '0644'
+  notify: Handle service state
+
+- name: Copy default serveradmin.xml if not present
+  copy:
+    src: "serveradmin.xml"
+    dest: "{{ server_admin }}"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+    mode: '0644'
+  notify: Handle service state
+
+- name: Check if unit file existed before
+  stat:
+    path: "/etc/systemd/system/{{ server_service }}"
+  register: service_file
+
+- name: Ensure systemd service file is present
+  template:
+    src: "{{ server_service }}.j2"
+    dest: "/etc/systemd/system/{{ server_service }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Handle service state

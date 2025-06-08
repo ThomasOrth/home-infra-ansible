@@ -1,0 +1,6 @@
+- name: Ensure system user exists
+  user:
+    name: "{{ monitoring_user }}"
+    system: true
+    shell: /usr/sbin/nologin
+    create_home: false

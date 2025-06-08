@@ -1,0 +1,32 @@
+
+- name: User creation
+  import_tasks: user.yml
+  tags:
+    - gameserver
+    - 7d2d
+    - discord-bot
+    - user
+
+- name: Copy static files
+  include_tasks: files.yml
+  tags:
+    - gameserver
+    - 7d2d
+    - discord-bot
+    - files
+
+- name: Configure venv
+  include_tasks: venv.yml
+  tags:
+    - gameserver
+    - 7d2d
+    - discord-bot
+    - venv
+
+- name: Manage Systemd
+  include_tasks: systemd.yml
+  tags:
+    - gameserver
+    - 7d2d
+    - discord-bot
+    - systemd

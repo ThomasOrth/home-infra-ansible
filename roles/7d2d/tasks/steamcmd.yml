@@ -1,0 +1,30 @@
+- name: Create SteamCMD directory
+  file:
+    path: "{{ steamcmd_dir }}"
+    state: directory
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+    mode: '0755'
+
+- name: Check if steacmd script is installed
+  stat:
+    path: "{{ steamcmd_path }}"
+  register: steamcmd_script
+
+- name: Download SteamCMD tarball
+  get_url:
+    url: "http://media.steampowered.com/installer/steamcmd_linux.tar.gz"
+    dest: "{{ steamcmd_tar }}"
+    mode: '0644'
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+  when: not steamcmd_script.stat.exists
+
+- name: Extract SteamCMD
+  unarchive:
+    src: "{{ steamcmd_tar }}"
+    dest: "{{ steamcmd_dir }}"
+    remote_src: yes
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+  when: not steamcmd_script.stat.exists

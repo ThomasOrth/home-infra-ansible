@@ -1,0 +1,14 @@
+[Unit]
+Description=7 Days to Die Server
+After=network.target
+
+[Service]
+Type=simple
+User={{ steamcmd_user }}
+WorkingDirectory={{ server_dir }}
+ExecStart={{ server_dir }}/startserver.sh -configfile={{ server_dir }}/serverconfig.xml -logfile {{ server_dir }}/7DaysToDieServer_Data/output_log.txt
+Restart=on-failure
+Environment=XDG_RUNTIME_DIR=/run/user/1001
+
+[Install]
+WantedBy=multi-user.target

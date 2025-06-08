@@ -1,0 +1,22 @@
+- name: Check if unit file existed before
+  stat:
+    path: "{{ dest_service_file }}"
+  register: service_file
+
+- name: Ensure systemd service file is present
+  template:
+    src: "{{ src_service_file }}"
+    dest: "{{ dest_service_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Handle service state
+
+- name: Ensure systemd env file is present
+  template:
+    src: "{{ src_env_file }}"
+    dest: "{{ dest_env_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Handle service state

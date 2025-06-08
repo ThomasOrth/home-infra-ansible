@@ -1,0 +1,5 @@
+---
+- name: Initialize the linux machine
+  hosts: all
+  roles:
+    - init

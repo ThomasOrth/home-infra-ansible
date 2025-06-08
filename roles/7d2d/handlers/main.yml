@@ -1,0 +1,6 @@
+- name: Handle service state
+  systemd:
+    name: "{{ server_service }}"
+    daemon-reload: true
+    enabled: true
+    state: "{{ 'restarted' if service_file.stat.exists else 'started' }}"

@@ -1,0 +1,28 @@
+- name: Ensure PasswordAuthentication is set to no
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+    state: present
+    backrefs: true
+  register: sshd_config
+
+# - name: Disable challenge-response authentication
+#   lineinfile:
+#     path: /etc/ssh/sshd_config
+#     regexp: '^#?ChallengeResponseAuthentication'
+#     line: 'ChallengeResponseAuthentication no'
+#     state: present
+#     backrefs: yes
+
+- name: Restart SSH service (Debian/Ubuntu)
+  service:
+    name: ssh
+    state: restarted
+  when: ansible_os_family == 'Debian' and sshd_config.changed
+
+- name: Restart SSH service (RHEL/CentOS)
+  service:
+    name: sshd
+    state: restarted
+  when: ansible_os_family == 'RedHat' and sshd_config.changed

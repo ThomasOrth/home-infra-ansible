@@ -1,0 +1,5 @@
+---
+- name: Configure MQTT Monitoring
+  hosts: all
+  roles:
+    - monitoring

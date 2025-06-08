@@ -1,0 +1,6 @@
+- name: Ensure system user exists
+  user:
+    name: "{{ steamcmd_user }}"
+    shell: /bin/bash
+    home: "{{ steamcmd_home }}"
+    create_home: yes

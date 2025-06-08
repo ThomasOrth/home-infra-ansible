@@ -1,0 +1,11 @@
+- name: Install sensors
+  package:
+    name:
+      - lm-sensors
+    state: present
+
+- name: Configure lm-sensors
+  command: sensors-detect --auto
+
+- name: Add drivetemp manually
+  command: modprobe drivetemp

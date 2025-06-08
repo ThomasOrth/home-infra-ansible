@@ -1,0 +1,33 @@
+- name: Installation of base packages
+  import_tasks: base_packages.yml
+  tags:
+    - gameserver
+    - 7d2d
+    - base
+
+- name: User creation
+  import_tasks: user.yml
+  tags:
+    - gameserver
+    - 7d2d
+    - user
+
+- name: Firewall settings
+  import_tasks: firewall.yml
+  tags:
+    - gameserver
+    - 7d2d
+    - firewall
+
+- name: Steamcmd install 
+  import_tasks: steamcmd.yml
+  tags:
+    - gameserver
+    - 7d2d
+    - steamcmd
+
+- name: Server install
+  import_tasks: server.yml
+  tags:
+    - gameserver
+    - 7d2d

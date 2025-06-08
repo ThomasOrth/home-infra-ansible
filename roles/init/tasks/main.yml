@@ -1,0 +1,24 @@
+- name: Installation of base packages
+  include_tasks: base_packages.yml
+  tags:
+    - init
+
+- name: SSH Configuration
+  include_tasks: ssh.yml
+  tags:
+    - init
+    - zsh
+
+- name: User creation
+  include_tasks: user.yml
+  tags:
+    - init
+    - user
+  when: not skip_init | default(false)
+
+- name: Installation of zsh and oh-my-zsh
+  include_tasks: zsh.yml
+  tags:
+    - init
+    - zsh
+  when: not skip_init | default(false)

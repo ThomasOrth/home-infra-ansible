@@ -1,0 +1,9 @@
+- name: Ensure base packages are installed
+  package:
+    name:
+      - tar
+      - vim
+      - wget
+      - sudo
+      - lib32gcc-s1
+    state: present

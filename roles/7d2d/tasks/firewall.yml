@@ -1,0 +1,32 @@
+- name: Debug Variables
+  debug:
+    var: tcp_ports
+
+- name: Ensure UFW is installed
+  apt:
+    name: ufw
+    state: present
+    update_cache: yes
+
+- name: Allow TCP ports for 7 Days to Die
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ tcp_ports }}"
+
+- name: Allow UDP ports for 7 Days to Die
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: udp
+  loop: "{{ udp_ports }}"
+
+- name: Allow SSH for remote access
+  community.general.ufw:
+    rule: allow
+    name: OpenSSH
+
+- name: Enable UFW (if not already enabled)
+  community.general.ufw:
+    state: enabled

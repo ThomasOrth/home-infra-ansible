@@ -1,0 +1,36 @@
+- name: Installation of base packages
+  include_tasks: base_packages.yml
+  tags:
+    - monitoring
+
+- name: Install HW Temperature monitoring
+  include_tasks: hardware.yml
+  tags:
+    - monitoring
+    - hardware
+  when: "'hardware' in group_names"
+
+- name: User creation
+  include_tasks: user.yml
+  tags:
+    - monitoring
+    - user
+  when: monitoring_user != "root"
+
+- name: Copy static files
+  include_tasks: files.yml
+  tags:
+    - monitoring
+    - files
+
+- name: Configure venv
+  include_tasks: venv.yml
+  tags:
+    - monitoring
+    - venv
+
+- name: Manage Systemd
+  include_tasks: systemd.yml
+  tags:
+    - monitoring
+    - systemd

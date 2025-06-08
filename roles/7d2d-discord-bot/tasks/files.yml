@@ -1,0 +1,16 @@
+- name: Ensure home directory exists
+  file:
+    path: "{{ service_user_home }}"
+    state: directory
+    owner: "{{ service_user }}"
+    group: "{{ service_user }}"
+    mode: '0755'
+
+- name: Ensure the script is present
+  copy:
+    src: "{{ service_name }}.py"
+    dest: "{{ service_user_home }}"
+    owner: "{{ service_user }}"
+    group: "{{ service_user }}"
+    mode: '0755'
+  notify: Handle service state

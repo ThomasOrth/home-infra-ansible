@@ -1,0 +1,19 @@
+- name: Update and upgrade packages on Debian-based systems
+  apt:
+    update_cache: yes
+    upgrade: dist
+  when: ansible_os_family == "Debian"
+
+- name: Update and upgrade packages on RedHat-based systems
+  yum:
+    name: '*'
+    state: latest
+  when: ansible_os_family == "RedHat"
+
+- name: Ensure base packages are installed
+  package:
+    name:
+      - vim
+      - curl
+      - wget
+    state: present

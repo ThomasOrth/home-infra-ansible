@@ -1,0 +1,4 @@
+service_user: "7d2ddiscordbot"
+service_user_home: "/opt/{{ service_user }}"
+service_name: "7d2d-discord-bot"
+venv_dir: "{{ service_user_home }}/venv"

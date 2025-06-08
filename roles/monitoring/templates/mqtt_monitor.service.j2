@@ -1,0 +1,14 @@
+[Unit]
+Description=Linux Monitor MQTT Service
+After=network.target
+
+[Service]
+User={{ monitoring_user }}
+Group={{ monitoring_user }}
+ExecStart={{ venv_dir }}/bin/python {{ home_dir }}/{{ script_name }}
+EnvironmentFile={{ dest_env_file }}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

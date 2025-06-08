@@ -1,0 +1,5 @@
+---
+- name: Configure 7d2d server
+  hosts: 7d2d
+  roles:
+    - 7d2d

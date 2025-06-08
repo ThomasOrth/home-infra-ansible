@@ -1,0 +1,22 @@
+- name: Copy Python requirements file
+  copy:
+    src: requirements.txt
+    dest: "{{ home_dir }}/requirements.txt"
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+    mode: '0644'
+  register: requirements
+
+- name: Create a Python virtual environment
+  command: "python3 -m venv {{ venv_dir }}"
+  args:
+    creates: "{{ venv_dir }}"
+  register: venv_dir_state
+
+- name: Install Python dependencies into venv
+  pip:
+    requirements: "{{ home_dir }}/requirements.txt"
+    virtualenv: "{{ venv_dir }}"
+    virtualenv_command: python3 -m venv
+  when: requirements.changed or venv_dir_state.changed
+  notify: Handle service state

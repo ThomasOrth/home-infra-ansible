@@ -1,0 +1,16 @@
+- name: Ensure monitoring home directory exists
+  file:
+    path: "{{ home_dir }}"
+    state: directory
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+    mode: '0755'
+
+- name: Ensure monitor script is present
+  copy:
+    src: mqtt_monitor.py
+    dest: "{{ home_dir }}"
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+    mode: '0755'
+  notify: Handle service state

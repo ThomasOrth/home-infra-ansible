@@ -1,0 +1,22 @@
+steamcmd_user: steam
+steamcmd_home: "/home/{{ steamcmd_user }}"
+steamcmd_dir: "{{ steamcmd_home }}/steamcmd"
+steamcmd_path: "{{ steamcmd_dir }}/steamcmd.sh"
+steamcmd_url: "http://media.steampowered.com/installer/steamcmd_linux.tar.gz"
+steamcmd_tar: "{{ steamcmd_dir }}/steamcmd_linux.tar.gz"
+
+server_dir: "{{ steamcmd_home }}/7d2d"
+server_saves_dir: "{{ steamcmd_home }}/.local/share/7DaysToDie/Saves"
+server_app_id: 294420
+server_config: "{{ server_dir }}/serverconfig.xml"
+server_admin: "{{ server_saves_dir }}/serveradmin.xml"
+server_service: "7d2d.service"
+
+tcp_ports:
+  - 8080
+  - 26900
+udp_ports:
+  - 8080
+  - 26900
+  - 26901
+  - 26902

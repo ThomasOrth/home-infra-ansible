@@ -1,0 +1,31 @@
+- name: Ensure system user exists
+  user:
+    name: "{{ os_user }}"
+    create_home: true
+
+- name: Ensure .ssh directory exists for the user
+  file:
+    path: "/home/{{ os_user }}/.ssh"
+    state: directory
+    mode: '0700'
+    owner: "{{ os_user }}"
+    group: "{{ os_user }}"
+
+- name: Ensure SSH key is present for the user
+  lineinfile:
+    path: "/home/{{ os_user }}/.ssh/authorized_keys"
+    line: "{{ lookup('file', ansible_ssh_private_key_file + '.pub') }}"
+    create: true
+    state: present
+    owner: "{{ os_user }}"
+    group: "{{ os_user }}"
+    mode: '0600'
+
+- name: Create a passwordless sudoers file for the os user
+  copy:
+    dest: "/etc/sudoers.d/{{ os_user }}"
+    content: "{{ os_user }} ALL=(ALL) NOPASSWD:ALL"
+    owner: root
+    group: root
+    mode: '0440'
+    validate: '/usr/sbin/visudo -cf %s'

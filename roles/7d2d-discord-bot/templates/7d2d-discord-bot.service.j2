@@ -1,0 +1,15 @@
+[Unit]
+Description=7d2d Discord Status Bot
+After=network.target
+
+[Service]
+Type=simple
+User={{ service_user }}
+Environment="PYTHONUNBUFFERED=1"
+EnvironmentFile=/etc/{{ service_name }}.env
+ExecStart={{ venv_dir }}/bin/python {{ service_user_home }}/{{ service_name }}.py
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
