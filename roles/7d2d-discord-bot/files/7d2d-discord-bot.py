@@ -17,6 +17,7 @@ STATUS_PREFIXES = {
 }
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+DISCORD_CATEGORY_ID = int(os.getenv("DISCORD_CATEGORY_ID", "0"))
 DISCORD_CHANNEL_ID = int(os.getenv("DISCORD_CHANNEL_ID", "0"))
 DISCORD_MESSAGE_ID = int(os.getenv("DISCORD_MESSAGE_ID", "0"))
 TELNET_HOST = os.getenv("TELNET_HOST", "127.0.0.1")
@@ -73,7 +74,7 @@ class ServerTime:
         if self.is_blood_moon_night:
             return "🔥Now!🔥"
         elif self.is_blood_moon_day:
-            return "🧟 Today"
+            return "🧟Today🧟"
         else:
             return f"Day {self.next_blood_moon.day}"
 
@@ -139,7 +140,7 @@ def query_7d2d_status() -> Tuple[ServerTime | None, int | None]:
 def generate_status_text(time: ServerTime | None, players: int | None) -> str:
     players_str = str(players) if players is not None and players >= 0 else "N/A"
     time_str = (
-        f"{time} *(next Horde Night: {time.blood_moon_state})*" if time else "N/A"
+        f"{time} - Next Horde Night: {time.blood_moon_state}" if time else "N/A"
     )
     response = []
     response.append(f"{STATUS_PREFIXES.get('players')} {players_str}")
@@ -181,6 +182,8 @@ def register_bot_events(bot: commands.Bot):
 
     @bot.command(name="status", help="Immediate snapshot of time & players")
     async def status_cmd(ctx: commands.Context):
+        if ctx.channel.category_id != DISCORD_CATEGORY_ID:
+            return
         time, players = await asyncio.get_event_loop().run_in_executor(
             None, query_7d2d_status
         )
