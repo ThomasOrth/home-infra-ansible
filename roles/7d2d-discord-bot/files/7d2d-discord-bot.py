@@ -58,7 +58,7 @@ class ServerTime:
     def is_blood_moon_night(self) -> bool:
         """Check if the current time is during a blood moon night."""
         return (self.is_blood_moon_day and self.hour >= 22) or (
-            not self.day % 7 == 1 and self.hour < 4
+            self.day % 7 == 1 and self.hour < 4
         )
 
     @property
@@ -70,10 +70,10 @@ class ServerTime:
     @property
     def blood_moon_state(self) -> str:
         """Return a string indicating the blood moon state."""
-        if self.is_blood_moon_day:
-            return "🧟 Today"
-        elif self.is_blood_moon_night:
+        if self.is_blood_moon_night:
             return "🔥Now!🔥"
+        elif self.is_blood_moon_day:
+            return "🧟 Today"
         else:
             return f"Day {self.next_blood_moon.day}"
 
