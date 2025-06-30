@@ -6,6 +6,14 @@
     group: "{{ steamcmd_user }}"
     mode: '0755'
 
+- name: Create 7D2D saves directory
+  file:
+    path: "{{ server_saves_dir }}"
+    state: directory
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+    mode: '0755'
+
 - name: Install 7 Days to Die server using SteamCMD
   shell: >
     sudo -u steam
@@ -24,7 +32,16 @@
     group: "{{ steamcmd_user }}"
     recurse: yes
 
-- name: Copy default serverconfig.xml if not present
+- name: Backup original serverconfig.xml
+  copy:
+    src: "{{ server_config }}"
+    remote_src: yes
+    dest: "{{ server_config }}.bak"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+    mode: '0644'
+
+- name: Copy serverconfig.xml
   copy:
     src: "serverconfig.xml"
     dest: "{{ server_config }}"
@@ -33,7 +50,16 @@
     mode: '0644'
   notify: Handle service state
 
-- name: Copy default serveradmin.xml if not present
+- name: Backup original serveradmin.xml
+  copy:
+    src: "{{ server_admin }}"
+    remote_src: yes
+    dest: "{{ server_admin }}.bak"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+    mode: '0644'
+
+- name: Copy serveradmin.xml
   copy:
     src: "serveradmin.xml"
     dest: "{{ server_admin }}"

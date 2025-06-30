@@ -1,12 +1,10 @@
 import os
 import re
-import time
 import asyncio
 import logging
-import telnetlib
+import telnetlib3
 
-from typing import Tuple, Generator
-from contextlib import contextmanager
+from typing import Tuple
 
 import discord
 from discord.ext import commands
@@ -79,63 +77,65 @@ class ServerTime:
             return f"Day {self.next_blood_moon.day}"
 
 
-@contextmanager
-def telnet_connection() -> Generator[telnetlib.Telnet, None, None]:
-    """Yield an authenticated Telnet connection to the 7d2d server."""
-    tn: telnetlib.Telnet | None = None
+async def telnet_connection():
+    """Async context manager for telnetlib3 connection."""
+    reader, writer = await telnetlib3.open_connection(
+        host=TELNET_HOST,
+        port=TELNET_PORT,
+        shell=None,
+        connect_minwait=0.5,
+        connect_maxwait=TELNET_TIMEOUT,
+        encoding='utf8'
+    )
     try:
-        tn = telnetlib.Telnet(TELNET_HOST, TELNET_PORT, TELNET_TIMEOUT)
-        time.sleep(0.5)  # Give server time to respond
         if TELNET_PASSWORD:
-            tn.read_until(b"Please enter password:", TELNET_TIMEOUT)
-            tn.write(TELNET_PASSWORD.encode() + b"\n")
+            await reader.readuntil("Please enter password:")
+            writer.write(TELNET_PASSWORD + "\n")
         # Discard banner/prompt after login
-        tn.read_very_eager()
-        yield tn
+        await asyncio.sleep(0.5)
+        await reader.read(1024)
+        yield reader, writer
     finally:
-        if tn is not None:
-            tn.close()
+        writer.close()
+        await writer.wait_closed()
 
-
-def query_7d2d(tn: telnetlib.Telnet, query: str) -> str:
+async def query_7d2d(reader, writer, query: str) -> str:
     """Send a query to the 7 Days to Die server and return the response."""
-    tn.write(query.encode() + b"\n")
-    time.sleep(0.5)  # Allow some time for the server to respond
-    response = tn.read_very_eager().decode(errors="ignore").strip()
-    return response
+    writer.write(query + "\n")
+    await writer.drain()
+    await asyncio.sleep(0.5)
+    response = await reader.read(4096)
+    return response.strip()
 
-
-def query_7d2d_time(tn: telnetlib.Telnet) -> ServerTime | None:
+async def query_7d2d_time(reader, writer) -> ServerTime | None:
     pattern = r"Day (\d+), (\d{2}):(\d{2})"
-    response = query_7d2d(tn, "gettime")
+    response = await query_7d2d(reader, writer, "gettime")
     match = re.search(pattern, response)
-    server_time = None
     if match:
         day = int(match.group(1))
         hour = int(match.group(2))
         minute = int(match.group(3))
-        server_time = ServerTime(day, hour, minute)
-    return server_time
+        return ServerTime(day, hour, minute)
+    return None
 
-
-def query_7d2d_players(tn: telnetlib.Telnet) -> int | None:
+async def query_7d2d_players(reader, writer) -> int | None:
     pattern = r"Total of (\d+)\s+in the game"
-    response = query_7d2d(tn, "lp")
+    response = await query_7d2d(reader, writer, "lp")
     match = re.search(pattern, response)
-    player_count = None
     if match:
-        player_count = int(match.group(1))
-    return player_count
+        return int(match.group(1))
+    return None
 
 
-def query_7d2d_status() -> Tuple[ServerTime | None, int | None]:
+async def query_7d2d_status() -> Tuple[ServerTime | None, int | None]:
     try:
-        with telnet_connection() as tn:
-            return query_7d2d_time(tn), query_7d2d_players(tn)
-    except Exception as exc:
+        async for reader, writer in telnet_connection():
+            time = await query_7d2d_time(reader, writer)
+            players = await query_7d2d_players(reader, writer)
+            return time, players
+    except Exception:
         logging.exception("Telnet query failed")
         return None, None
-
 
 def generate_status_text(time: ServerTime | None, players: int | None) -> str:
     players_str = str(players) if players is not None and players >= 0 else "N/A"
@@ -151,9 +151,7 @@ def generate_status_text(time: ServerTime | None, players: int | None) -> str:
 async def status_loop(message: discord.Message):
     """Edit the specified message indefinitely with updated time/player info."""
     while True:
-        time, players = await asyncio.get_event_loop().run_in_executor(
-            None, query_7d2d_status
-        )
+        time, players = await query_7d2d_status()
         content = generate_status_text(time, players)
         try:
             await message.edit(content=content)
@@ -184,9 +182,7 @@ def register_bot_events(bot: commands.Bot):
     async def status_cmd(ctx: commands.Context):
         if ctx.channel.category_id != DISCORD_CATEGORY_ID:
             return
-        time, players = await asyncio.get_event_loop().run_in_executor(
-            None, query_7d2d_status
-        )
+        time, players = await query_7d2d_status()
         content = generate_status_text(time, players)
         await ctx.send(content)
 

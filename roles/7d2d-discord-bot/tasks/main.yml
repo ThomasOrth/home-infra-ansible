@@ -1,3 +1,10 @@
+- name: Installation of base packages
+  import_tasks: base_packages.yml
+  tags:
+    - gameserver
+    - 7d2d
+    - discord-bot
+    - base
 
 - name: User creation
   import_tasks: user.yml

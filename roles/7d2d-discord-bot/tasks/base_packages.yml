@@ -1,0 +1,5 @@
+- name: Ensure base packages are installed
+  package:
+    name:
+      - python3.13-venv
+    state: present

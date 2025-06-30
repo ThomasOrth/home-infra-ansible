@@ -50,6 +50,7 @@
     <!-- <user platform="Steam" userid="76561198021925107" name="Hint on who this user is" permission_level="0" /> -->
     <!-- <group steamID="103582791434672565" name="Steam Universe" permission_level_default="1000" permission_level_mod="0" /> -->
     <user platform="Steam" userid="76561198034904082" name="Prof" permission_level="0" />
+    <user platform="Steam" userid="76561198344627870" name="Carrie" permission_level="0" />
   </users>
   <whitelist>
     <!-- ONLY PUT ITEMS IN WHITELIST IF YOU WANT WHITELIST ONLY ENABLED!!! -->
