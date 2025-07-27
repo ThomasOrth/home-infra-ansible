@@ -7,7 +7,7 @@
   include_tasks: ssh.yml
   tags:
     - init
-    - zsh
+    - ssh
 
 - name: User creation
   include_tasks: user.yml

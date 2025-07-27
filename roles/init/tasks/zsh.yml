@@ -5,14 +5,17 @@
       - git
     state: present
   become: true
+  tags: zsh
 
 - name: Set user shell to zsh
   user:
     name: "{{ item }}"
     shell: /bin/zsh
+  become: true
   loop:
     - "{{ os_user }}"
     - root
+  tags: zsh
 
 - name: Install Oh My Zsh
   git:
@@ -24,6 +27,7 @@
   loop:
     - "{{ os_user }}"
     - root
+  tags: zsh
  
 - name: Install zsh-autosuggestions plugin
   git:
@@ -35,6 +39,7 @@
   loop:
     - "{{ os_user }}"
     - root
+  tags: zsh
 
 - name: Copy .zshrc file
   copy:
@@ -45,3 +50,4 @@
   loop:
     - "{{ os_user }}"
     - root
+  tags: zsh

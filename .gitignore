@@ -3,5 +3,5 @@ __pycache__/
 .vscode/
 *.log
 *.retry
-inventories/home-infra/
+inventories/home-infra
 inventory.ini
