@@ -1,0 +1,67 @@
+- name: Ensure server directory exists
+  file:
+    path: "{{ server_dir }}"
+    state: directory
+    owner: "{{ system_user }}"
+    group: "{{ system_user }}"
+    mode: '0755'
+
+- name: Download server file
+  tags:
+    - update
+  get_url:
+    url: "{{ server_file_url }}"
+    dest: "{{ server_dir }}/server.jar"
+  notify: Handle service state
+
+- name: Agree to eula
+  copy:
+    dest: "{{ server_dir }}/eula.txt"
+    content: "eula=true"
+    mode: '0644'
+
+- name: Start for the first time
+  command: "systemctl start {{ server_service }}"
+  args:
+    chdir: "{{ server_dir }}"
+  when: not service_file.stat.exists
+
+- name: Stop the initial run
+  command: "systemctl stop {{ server_service }}"
+  ignore_errors: yes
+  when: not service_file.stat.exists
+
+- name: Backup original configuration files
+  copy:
+    src: "{{ server_dir }}/{{ item }}"
+    dest: "{{ server_dir }}/{{ item }}.bak"
+    remote_src: yes
+    owner: "{{ system_user }}"
+    group: "{{ system_user }}"
+    mode: '0644'
+  loop:
+    - "server.properties"
+    - "whitelist.json"
+  tags:
+    - update
+
+- name: Copy configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ server_dir }}/{{ item }}"
+    owner: "{{ system_user }}"
+    group: "{{ system_user }}"
+    mode: "0644"
+  loop:
+    - server.properties
+    - whitelist.json
+  notify: Handle service state
+  tags:
+    - update
+
+- name: Set RCON password
+  lineinfile:
+    path: "{{ server_dir }}/server.properties"
+    regexp: '^rcon\.password=.*'
+    line: "rcon.password={{ rcon_password }}"
+  notify: Handle service state

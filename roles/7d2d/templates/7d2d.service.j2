@@ -8,6 +8,7 @@ User={{ steamcmd_user }}
 WorkingDirectory={{ server_dir }}
 ExecStart={{ server_dir }}/startserver.sh -configfile={{ server_dir }}/serverconfig.xml -logfile {{ server_dir }}/7DaysToDieServer_Data/output_log.txt
 Restart=on-failure
+RestartSec=30
 Environment=XDG_RUNTIME_DIR=/run/user/1001
 
 [Install]

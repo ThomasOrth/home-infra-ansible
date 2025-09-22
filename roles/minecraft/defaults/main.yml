@@ -1,0 +1,10 @@
+system_user: minecraft
+server_dir: /opt/minecraft
+server_service: "minecraft.service"
+server_file_url: "https://piston-data.mojang.com/v1/objects/6bce4ef400e4efaa63a13d5e6f6b500be969ef81/server.jar"  # 1.21.8
+server_startup_command: "/usr/bin/java -Xms1G -Xmx4G -jar server.jar nogui"
+
+tcp_ports:
+  - 25565
+  - 25575
+# udp_ports:

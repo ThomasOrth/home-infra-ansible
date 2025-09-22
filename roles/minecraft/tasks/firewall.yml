@@ -1,0 +1,34 @@
+- name: Debug Variables
+  debug:
+    var: tcp_ports
+
+- name: Ensure UFW is installed
+  apt:
+    name: ufw
+    state: present
+    update_cache: yes
+
+- name: Allow TCP ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ tcp_ports }}"
+  when: tcp_ports is defined
+
+- name: Allow UDP ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: udp
+  loop: "{{ udp_ports }}"
+  when: udp_ports is defined
+
+- name: Allow SSH for remote access
+  community.general.ufw:
+    rule: allow
+    name: OpenSSH
+
+- name: Enable UFW (if not already enabled)
+  community.general.ufw:
+    state: enabled

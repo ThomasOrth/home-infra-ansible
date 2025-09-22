@@ -1,0 +1,26 @@
+- name: Ensure base packages are installed
+  package:
+    name:
+      - tar
+      - vim
+      - wget
+      - sudo
+      - openjdk-21-jdk
+    state: present
+
+- name: Ensure system user exists
+  user:
+    name: "{{ system_user }}"
+    shell: /bin/bash
+    create_home: no
+
+- name: Firewall settings
+  import_tasks: firewall.yml
+  tags:
+    - firewall
+
+- name: Systemd configuration
+  import_tasks: systemd.yml
+
+- name: Initialize the server
+  import_tasks: server.yml

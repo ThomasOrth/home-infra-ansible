@@ -1,0 +1,14 @@
+[Unit]
+Description=Minecraft Server
+After=network.target
+
+[Service]
+Type=simple
+User={{ system_user }}
+WorkingDirectory={{ server_dir }}
+ExecStart={{ server_startup_command }}
+Restart=always
+Environment=XDG_RUNTIME_DIR=/run/user/1001
+
+[Install]
+WantedBy=multi-user.target

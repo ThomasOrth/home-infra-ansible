@@ -1,0 +1,13 @@
+- name: Check if unit file existed before
+  stat:
+    path: "/etc/systemd/system/{{ server_service }}"
+  register: service_file
+
+- name: Ensure systemd service file is present
+  template:
+    src: "{{ server_service }}.j2"
+    dest: "/etc/systemd/system/{{ server_service }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Handle service state
